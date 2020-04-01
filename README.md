@@ -1,10 +1,10 @@
 # GAMES
 
 
-GAMES USING PYGAME
-1.hangman
-2.tetris
-3.snake
+GAMES USING PYGAME <br>
+1.hangman<br>
+2.tetris<br>
+3.snake<br>
 
 
 # REQUIREMENTS
