@@ -11,7 +11,6 @@ height = 500
 cols = 25
 rows = 20
 
-
 class cube():
     rows = 20
     w = 500
@@ -25,13 +24,12 @@ class cube():
         self.dirnx = dirnx
         self.dirny = dirny
         self.pos  = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
-            
 
     def draw(self, surface, eyes=False):
         dis = self.w // self.rows
         i = self.pos[0]
         j = self.pos[1]
-        
+
         pygame.draw.rect(surface, self.color, (i*dis+1,j*dis+1,dis-2,dis-2))
         if eyes:
             centre = dis//2
@@ -40,13 +38,11 @@ class cube():
             circleMiddle2 = (i*dis + dis -radius*2, j*dis+8)
             pygame.draw.circle(surface, (0,0,0), circleMiddle, radius)
             pygame.draw.circle(surface, (0,0,0), circleMiddle2, radius)
-        
-
 
 class snake():
     body = []
     turns = {}
-    
+
     def __init__(self, color, pos):
         #pos is given as coordinates on the grid ex (1,5)
         self.color = color
@@ -54,12 +50,17 @@ class snake():
         self.body.append(self.head)
         self.dirnx = 0
         self.dirny = 1
-    
+
     def move(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            keys = pygame.key.get_pressed()
+            # Handeling the error when pygame window is closed directly.
+            try:
+                keys = pygame.key.get_pressed()
+            except:
+                pygame.error
+                exit()
 
             for key in keys:
                 if keys[pygame.K_LEFT]:
@@ -78,7 +79,7 @@ class snake():
                     self.dirny = 1
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
-        
+
         for i, c in enumerate(self.body):
             p = c.pos[:]
             if p in self.turns:
@@ -88,8 +89,7 @@ class snake():
                     self.turns.pop(p)
             else:
                 c.move(c.dirnx,c.dirny)
-        
-        
+
     def reset(self,pos):
         self.head = cube(pos)
         self.body = []
@@ -113,15 +113,13 @@ class snake():
 
         self.body[-1].dirnx = dx
         self.body[-1].dirny = dy
-    
+
     def draw(self, surface):
         for i,c in enumerate(self.body):
             if i == 0:
                 c.draw(surface, True)
             else:
                 c.draw(surface)
-
-
 
 def redrawWindow():
     global win
@@ -131,8 +129,6 @@ def redrawWindow():
     snack.draw(win)
     pygame.display.update()
     pass
-
-
 
 def drawGrid(w, rows, surface):
     sizeBtwn = w // rows
@@ -145,8 +141,6 @@ def drawGrid(w, rows, surface):
 
         pygame.draw.line(surface, (255,255,255), (x, 0),(x,w))
         pygame.draw.line(surface, (255,255,255), (0, y),(w,y))
-    
-
 
 def randomSnack(rows, item):
     positions = item.body
@@ -161,7 +155,6 @@ def randomSnack(rows, item):
 
     return (x,y)
 
-
 def main():
     global s, snack, win
     win = pygame.display.set_mode((width,height))
@@ -170,7 +163,7 @@ def main():
     snack = cube(randomSnack(rows,s), color=(0,255,0))
     flag = True
     clock = pygame.time.Clock()
-    
+
     while flag:
         pygame.time.delay(50)
         clock.tick(10)
@@ -183,14 +176,12 @@ def main():
         if s.body[0].pos == snack.pos:
             s.addCube()
             snack = cube(randomSnack(rows,s), color=(0,255,0))
-            
+
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z:z.pos,s.body[x+1:])):
                 print("Score:", len(s.body))
                 s.reset((10,10))
                 break
-                    
-        redrawWindow()
 
+        redrawWindow()
 main()
-    
